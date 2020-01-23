@@ -5,9 +5,8 @@
 
 ** Misc Notes
 
-  The object of creation is a script living in a docker. This script
-  will run tests to check scheme solutions. It'll do so by receiving
-  three parameters:
+  This is a setup script to check solutions to scheme exercisms in
+  Docker. The script gets three parameters:
 
   - slug (eg. ~two-fer~)
   - path to solution directory (including final slash)
