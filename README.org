@@ -1,0 +1,31 @@
+
+* Scheme Test Runner
+
+ Dockerized tests on scheme exercisms.
+
+** Misc Notes
+
+  The object of creation is a script living in a docker. This script
+  will run tests to check scheme solutions. It'll do so by receiving
+  three parameters:
+
+  - slug (eg. ~two-fer~)
+  - path to solution directory (including final slash)
+  - path to output directory
+
+  The output is to be jsonized, in a file ~results.json~. Must exit
+  with code 0 on success.
+
+*** Output structure
+
+  Fields are "status", "message"?, and "tests". Recursively, each test
+  has "name", "status", "message"?, "output" as fields.
+
+**** Status
+  
+  Possible values for status include "pass", "fail", "error". "error"
+  is for unexpected exceptions.
+
+*** Other reqs:
+
+  Output must be limited to 500 chars!
