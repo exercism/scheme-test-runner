@@ -1,30 +1,25 @@
 
 * Scheme Test Runner
 
- Dockerized tests on scheme exercisms.
+ Test scheme exercisms in docker.
 
-** Misc Notes
+** Notes
 
-  This is a setup script to check solutions to scheme exercisms in
-  Docker. The script gets three parameters:
+  The script gets three parameters:
 
   - slug (eg. ~two-fer~)
   - path to solution directory (including final slash)
   - path to output directory
 
-  The output is to be jsonized, in a file ~results.json~. Must exit
-  with code 0 on success.
+  The output is to be in json in the file ~results.json~.
 
 *** Output structure
 
-  Fields are "status", "message"?, and "tests". Recursively, each test
-  has "name", "status", "message"?, "output" as fields.
+  Fields are "status", "message"?, and "tests". Each test has "name",
+  "status", "message"?, "output" as fields.
 
-**** Status
-  
   Possible values for status include "pass", "fail", "error". "error"
   is for unexpected exceptions.
 
-*** Other reqs:
-
-  Output must be limited to 500 chars!
+  All that should be implemented. Still need to ensure output is
+  ~<500~ chars.
