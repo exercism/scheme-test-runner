@@ -3,6 +3,15 @@
 
  Test scheme exercisms in docker.
 
+** Plan
+
+  Pass the three parameters given to [[scripts/run.sh][run.sh]] to [[scripts/exercise.ss][exercise.ss]]. We don't
+  know if the student is using guile or chez, so try both. Read the
+  output s-expressions from each and select the one with the fewest
+  failures. Once that's in hand, convert the keys in the association
+  list to the format laid out in the [[https://github.com/exercism/automated-tests/][exercism/automated-tests]]
+  repository and finally output as JSON to a file ~results.json~.
+
 ** Notes
 
   The script gets three parameters:
@@ -21,5 +30,6 @@
   Possible values for status include "pass", "fail", "error". "error"
   is for unexpected exceptions.
 
-  All that should be implemented. Still need to ensure output is
-  ~<500~ chars.
+** todo
+  Most of the requirements should be implemented. One that isn't is
+  ensuring the output is ~< 500~ chars.
