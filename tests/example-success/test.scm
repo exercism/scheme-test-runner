@@ -138,10 +138,10 @@
 (let ([args (command-line)])
   (cond
     [(null? (cdr args))
-     (load "prime-factors.scm")
+     (load "example-success.scm")
      (test 'input 'output)]
     [(string=? (cadr args) "--docker")
-     (load "prime-factors.scm")
+     (load "example-success.scm")
      (run-docker test-cases)]
     [else (load (cadr args)) (test 'input 'output)]))
 
