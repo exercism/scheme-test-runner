@@ -143,9 +143,9 @@
 
 (let ([args (command-line)])
   (cond
-    [(null? (cdr args)) (load "example-success.scm") (test 'input 'output)]
+    [(null? (cdr args)) (load "example-empty-file.scm") (test 'input 'output)]
     [(string=? (cadr args) "--docker")
-     (load "example-success.scm")
+     (load "example-empty-file.scm")
      (run-docker test-cases)]
     [else (load (cadr args)) (test 'input 'output)]))
 

@@ -21,4 +21,12 @@ if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ]; then
     exit 1
 fi
 
-scheme --script "bin/exercise.ss" $@
+test_output=$(scheme --script "bin/exercise.ss" $@ 2>&1)
+
+# TODO: update 'exercise.ss' to gracefully handle syntax errors
+if [ ! $? -eq 0 ]; then
+    output_dir="${3%/}"
+    results_file="${output_dir}/results.json"
+    jq -n --arg output "${test_output}" '{version: 2, status: "fail", output: $output, tests: []}' > ${results_file}
+fi
+
