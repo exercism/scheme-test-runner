@@ -1,7 +1,7 @@
 FROM ubuntu
 
 RUN apt-get update && \
-    apt-get install -y guile-2.2 chezscheme && \
+    apt-get install -y chezscheme guile-2.2 jq && \
     apt-get purge --auto-remove && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
