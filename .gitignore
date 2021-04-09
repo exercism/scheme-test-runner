@@ -1,2 +1,1 @@
-*~
-result
+tests/**/results.json
