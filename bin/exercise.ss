@@ -1,19 +1,23 @@
 (import (chezscheme))
 
-(define (output-results status tests)
+(define (output-results status tests output)
   (delete-file "results.json")
   (with-output-to-file "results.json"
     (lambda ()
       (json-write `((status . ,status)
-                    (tests . ,tests))))))
+                    (tests . ,tests)
+                    (output . ,output))))))
 
 (define (report-results chez guile)
-  (let ((choice (if (<= (failure-count chez) (failure-count guile))
-                    chez
-                    guile)))
-    (if (zero? (failure-count choice))
-        (output-results "pass" (failure-messages choice))
-        (output-results "fail" (failure-messages choice)))))
+  (case (+ (length chez) (length guile))
+    (0 (output-results "fail" '() "Syntax error"))
+    (else 
+      (let ((choice (if (<= (failure-count chez) (failure-count guile))
+                      chez
+                      guile)))
+      (if (zero? (failure-count choice))
+          (output-results "pass" (failure-messages choice) "")
+          (output-results "fail" (failure-messages choice) ""))))))
 
 ;; read s-expression from process stdout
 (define (process->scheme command)
@@ -45,8 +49,11 @@
 
 ;; massage result of tests to desired format
 (define (convert result)
-  (let ((failures (filter failed-test? result)))
-    (cons (length failures) (map test->message result))))
+  (cond
+    ((list? result)
+      (let ((failures (filter failed-test? result)))
+            (cons (length failures) (map test->message result))))
+    (else '())))
 
 (define (test->message result)
   (let ((messages (cdr result)))

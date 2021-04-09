@@ -1,1 +1,1 @@
-{"status": "fail", "tests": [{"name": "year not divisible by 4 in common year", "status": "fail", "output": null}, {"name": "year divisible by 4, not divisible by 100 in leap year", "status": "fail", "output": null}]}
+{"status": "fail", "tests": [{"name": "year not divisible by 4 in common year", "status": "fail", "output": null}, {"name": "year divisible by 4, not divisible by 100 in leap year", "status": "fail", "output": null}], "output": null}
