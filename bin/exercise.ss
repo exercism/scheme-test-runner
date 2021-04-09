@@ -95,12 +95,12 @@
 
     (define (write-any x p)
       (cond
-       ((or (string? x)
-            (number? x)) (write x p))
+       ((null? x) (display "null" p))
+       ((string? x) (write (if (eq? x "") 'null x) p))       
+       ((number? x) (write x p))       
        ((boolean? x) (display (if x "true" "false") p))
        ((symbol? x) (write (if (eq? x 'null) 'null (symbol->string x))
-                           p)) ;; for convenience
-       ((null? x) (display "null" p))
+                           p)) ;; for convenience       
        ((and (list? x)
              (pair? (car x))
              (not (pair? (caar x))))
