@@ -1,6 +1,7 @@
 (import (chezscheme))
 
 (define (output-results status tests)
+  (delete-file "results.json")
   (with-output-to-file "results.json"
     (lambda ()
       (json-write `((status . ,status)
