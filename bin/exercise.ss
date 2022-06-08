@@ -9,18 +9,19 @@
                     (tests . ,tests)
                     (output . ,output))))))
 
-(define (report-results chez guile)
-  (if (zero? (+ (length chez) (length guile)))
-    (output-results "fail" '() "Syntax error")
-    (let ((choice (cond
-                    ((null? guile) chez)
-                    ((null? chez) guile)
-                    (else (if (<= (failure-count chez) (failure-count guile))
-                            chez
-                            guile)))))
-      (if (zero? (failure-count choice))
-          (output-results "pass" (failure-messages choice) "")
-          (output-results "fail" (failure-messages choice) "")))))
+(define report-results
+  (let ((pass-or-fail
+         (lambda (result)
+           (output-results
+            (or (and (zero? (failure-count result)) "pass") "fail")
+            (failure-messages result) ""))))
+    (lambda (chez guile)
+      (cond
+       ((andmap null? `(,chez ,guile))
+        (output-results "fail" '() "Syntax error"))
+       (else
+        (if (not (null? chez)) (pass-or-fail chez)
+            (pass-or-fail guile)))))))
 
 ;; read s-expression from process stdout
 (define (process->scheme command)
