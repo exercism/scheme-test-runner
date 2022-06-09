@@ -56,13 +56,13 @@
      `((version . 2)
        . ,(call/cc
            (lambda (k)
-             (unless (parse-ok? results)
+             (unless (result-ok? results)
                (k `((status . error)
                     (message . ,(cdr (assoc 'message results))))))
              `((status
-                . (if (zero? (failure-count results)) 'pass 'fail))
+                . ,(if (zero? (failure-count results)) 'pass 'fail))
                (tests
-                (map report-test (get-tests results))))))))))
+                ,@(map report-test (get-tests results))))))))))
 
 ;; read s-expression from process stdout
 (define (process->scheme command)
@@ -102,6 +102,10 @@
            (lambda (k)
             (with-exception-handler
                 (lambda (e)
+                  ;; This is useful for debugging this script.  Maybe it
+                  ;; should be paramterized?
+                  (display (format "Non-fatal error: ~s\n" (process-condition e))
+                           (current-error-port))
                   (k
                    (write-results
                     `((version . 2)
@@ -118,7 +122,7 @@
 
 (define (failure-count results)
   (fold-left (lambda (count x)
-               (if (failed-test? x) (+ count x)
+               (if (failed-test? x) (1+ count)
                    count))
              0 results))
 
