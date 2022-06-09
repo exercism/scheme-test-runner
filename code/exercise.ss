@@ -6,8 +6,7 @@
     (lambda ()
       (json-write `((version . ,2)
                     (status . ,status)
-                    (tests . ,tests)
-                    (output . ,output))))))
+                    (tests . ,tests))))))
 
 (define legacy-report-results
   (let ((pass-or-fail
