@@ -214,7 +214,3 @@
 
     (lambda (x)
       (write-any x (current-output-port)))))
-
-(let ((args (cdr (command-line))))
-  (when (= (length args) 3)
-    (apply exercise args)))

@@ -13,9 +13,12 @@ clean-docker :
 	docker image rm --force $(image)
 
 enter-docker :
-	docker run -it $(image) sh 
+	docker run -it $(image) sh
 
 run-example :
 	make clean-docker
 	make build-docker
 	docker run -it $(image) sh /opt/test-runner/bin/run.sh $(example)
+
+clean-results :
+	find . -name "results.json" -exec rm {} \;
