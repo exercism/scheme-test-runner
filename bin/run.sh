@@ -21,4 +21,4 @@ if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ]; then
     exit 1
 fi
 
-scheme --script "bin/exercise.ss" $@
+printf '(exercise "%s" "%s" "%s")' "$1" "$2" "$3" | scheme code/exercise.ss >/dev/null
