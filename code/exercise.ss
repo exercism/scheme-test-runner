@@ -88,6 +88,12 @@
 (define (cdr-or x y)
   (if (pair? x) (cdr x) y))
 
+;; We can create the input and output dirs from just the slug
+;; when we are running tests for the test-runner.
+(define (run-test-exercise slug)
+  (let ((dir (format "~a/tests/~a/" (current-directory) slug)))
+    (exercise slug dir dir)))
+
 ;; try to run solution for both guile and chez. report-results selects
 ;; run with fewest failures.
 (define (exercise slug input-directory output-directory)
