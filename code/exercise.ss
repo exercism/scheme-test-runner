@@ -76,6 +76,10 @@
     (lambda ()
       (write o))))
 
+(define (scheme->pretty-string o)
+  (with-output-to-string
+    (lambda () (pretty-print o))))
+
 (define (process-condition e)
   (if (not (condition? e)) e
       `(error
@@ -171,8 +175,52 @@
     `((name . ,(cdr (assoc 'description attrs)))
       (status . ,(if (failed-test? test) "fail" "pass"))
       (output . ,(cdr (assoc 'stdout attrs)))
-      (test_code . ,(scheme->string (cdr (assoc 'code attrs))))
+      (test_code . ,(format-test-code (cdr (assoc 'code attrs))))
       ,@(or (and message `((message . ,message))) '()))))
+
+(define (format-test-code code)
+  (call/cc
+   (lambda (k)
+     (unless (and (list? code) (not (null? code)))
+       (k (scheme->pretty-string code)))
+     (case (car code)
+       ((test-success) (format-test-success code))
+       ((test-error) (format-test-error code))
+       (else (scheme->pretty-string code))))))
+
+(define (third xs)
+  (list-ref xs 2))
+
+(define (fourth xs)
+  (list-ref xs 3))
+
+(define (fifth xs)
+  (list-ref xs 4))
+
+(define (sixth xs)
+  (list-ref xs 5))
+
+;; The 3rd, 4th, 5th, and 6th elements of the src list are the
+;; comparator, procedure, inputs, and expected output respectively.
+;; The output is not always quoted, so we actually need to treat it
+;; specially and pull it out of the quote only when detected as a quoted list.
+(define (format-test-success code)
+  (scheme->pretty-string
+   `(,(third code)
+     (,(fourth code) ,@(cadr (fifth code)))
+     ,(get-output (sixth code)))))
+
+(define (get-output x)
+  (cond
+   ((and (list? x) (not (null? x))
+         (equal? 'quote (car x)))
+    (cadr x))
+   (else x)))
+
+;; The 3rd and 4th elements of the src list are procedure and its inputs.
+(define (format-test-error code)
+  (scheme->pretty-string
+   `(,(third code) ,@(cadr (fourth code)))))
 
 (define json-write
   (let ()
