@@ -17,7 +17,11 @@
     (lambda (chez guile)
       (cond
        ((andmap null? `(,chez ,guile))
-        (output-results "fail" '() "Syntax error"))
+        (write-results
+         `((version . 2)
+           (status . error)
+           (message . "legacy test crash")
+           (tests))))
        (else
         (if (not (null? chez)) (pass-or-fail chez)
             (pass-or-fail guile)))))))
