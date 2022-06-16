@@ -70,10 +70,11 @@
 ;; read s-expression from process stdout
 (define (process->scheme command)
   (let-values (((out in id) (apply values (process command))))
-    (let ((result (read out)))
+    (let* ((raw (get-string-all out))
+           (result (with-input-from-string raw read)))
       (close-port out)
       (close-port in)
-      result)))
+      (values result raw))))
 
 (define (scheme->string o)
   (with-output-to-string
@@ -108,17 +109,20 @@
   (let ((chez-cmd "scheme --script test.scm --docker")
         (guile-cmd "guile test.scm --docker"))
     (parameterize ((cd input-directory))
-      (let ((chez-result (process->scheme chez-cmd))
-            (guile-result (process->scheme guile-cmd)))
+      (let-values (((chez-result chez-raw) (process->scheme chez-cmd))
+                   ((guile-result guile-raw) (process->scheme guile-cmd)))
         (parameterize ((cd output-directory))
           (call/cc
            (lambda (k)
             (with-exception-handler
                 (lambda (e)
-                  ;; This is useful for debugging this script.  Maybe it
-                  ;; should be paramterized?
-                  (display (format "Non-fatal error: ~s\n" (process-condition e))
-                           (current-error-port))
+                  (call-with-port (current-error-port)
+                    (lambda (out)
+                     ;; This is useful for debugging this script.  Maybe it
+                     ;; should be paramterized?
+                     (display (format "Non-fatal error: ~s\n" (process-condition e)) out)
+                     (display (format "chez output: ~s\n" chez-raw) out)
+                     (display (format "guile output: ~s\n" guile-raw) out)))
                   (k
                    (write-results
                     `((version . 2)
