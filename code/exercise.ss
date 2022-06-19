@@ -69,12 +69,19 @@
 
 ;; read s-expression from process stdout
 (define (process->scheme command)
-  (let-values (((out in id) (apply values (process command))))
-    (let* ((raw (get-string-all out))
-           (result (with-input-from-string raw read)))
+  (let-values (((out in err id) (open-process-ports command 'block (current-transcoder))))
+    (let ((err* (get-string-all err))
+          (result (read in)))
+      (unless (eof-object? err*)
+        (call-with-port (current-error-port)
+          (lambda (e)
+            (display (format "Error executing ~s:\n" command) e)
+            (display err* e)
+            (newline))))
       (close-port out)
+      (close-port err)
       (close-port in)
-      (values result raw))))
+      result)))
 
 (define (scheme->string o)
   (with-output-to-string
@@ -103,39 +110,43 @@
   (let ((dir (format "~a/tests/~a/" (current-directory) slug)))
     (exercise slug dir dir)))
 
+(define (convert xs)
+  (or (and (list? xs) xs) '()))
+
 ;; try to run solution for both guile and chez. report-results selects
 ;; run with fewest failures.
 (define (exercise slug input-directory output-directory)
-  (let ((chez-cmd "scheme --script test.scm --docker")
-        (guile-cmd "guile test.scm --docker"))
-    (parameterize ((cd input-directory))
-      (let-values (((chez-result chez-raw) (process->scheme chez-cmd))
-                   ((guile-result guile-raw) (process->scheme guile-cmd)))
-        (parameterize ((cd output-directory))
-          (call/cc
-           (lambda (k)
-            (with-exception-handler
-                (lambda (e)
-                  (call-with-port (current-error-port)
-                    (lambda (out)
-                     ;; This is useful for debugging this script.  Maybe it
-                     ;; should be paramterized?
-                     (display (format "Non-fatal error: ~s\n" (process-condition e)) out)
-                     (display (format "chez output: ~s\n" chez-raw) out)
-                     (display (format "guile output: ~s\n" guile-raw) out)))
-                  (k
-                   (write-results
-                    `((version . 2)
-                      (status . error)
-                      (message . "Syntax error")
-                      (tests)))))
-              (lambda ()
-                (case (or (cdr-or (assoc 'test-lib-version chez-result) 0)
-                          (cdr-or (assoc 'test-lib-version guile-result) 0))
-                  (0 (legacy-report-results (convert chez-result)
-                                            (convert guile-result)))
-                  (else
-                   (report-results chez-result guile-result))))))))))))
+  (parameterize ((cd input-directory))
+    (let ((chez-result (process->scheme "scheme --script test.scm --docker"))
+          (guile-result (process->scheme "guile test.scm --docker")))
+      (parameterize ((cd output-directory))
+        (call/cc
+         (lambda (k)
+           (with-exception-handler
+               (lambda (e)
+                 (call-with-port (current-error-port)
+                   (lambda (out)
+                     (display (format "Non-fatal error: ~s\n" (process-condition e)) out)))
+                 (k
+                  (write-results
+                   `((version . 2)
+                     (status . error)
+                     (message . "Syntax error")
+                     (tests)))))
+             (lambda ()
+               ;; One result must be a list at least.
+               (unless (ormap list? `(,chez-result ,guile-result))
+                 (error 'exercise "syntax error"))
+               ;; Now make sure they are both lists.
+               (set! chez-result (convert chez-result))
+               (set! guile-result (convert guile-result))
+               ;; Finally branch on the version.
+               (case (or (cdr-or (assoc 'test-lib-version chez-result) #f)
+                         (cdr-or (assoc 'test-lib-version guile-result) 0))
+                 (0 (legacy-report-results (legacy-convert chez-result)
+                                           (legacy-convert guile-result)))
+                 (else
+                  (report-results chez-result guile-result)))))))))))
 
 (define (failure-count results)
   (fold-left (lambda (count x)
@@ -153,7 +164,7 @@
   (cdr result))
 
 ;; massage result of tests to desired format
-(define (convert result)
+(define (legacy-convert result)
   (cond
     ((list? result)
       (let ((failures (filter failed-test? result)))
