@@ -16,8 +16,9 @@
         ,(if (who-condition? e) (condition-who e)
              'unknown)
         ,(condition-message e)
-        ,@(if (not (irritants-condition? e)) '()
-              (condition-irritants e)))))
+        ,@(map scheme->string
+               (if (not (irritants-condition? e)) '()
+                   (condition-irritants e))))))
 
 (define (test-success description success-predicate
                       procedure input expected code)
@@ -159,4 +160,4 @@
                                    (append results (map run-test suite)))
                                  '()  suites))))))))]
      ;; You can pass the name of a file to load instead of the "expected" solution filename.
-     [else (load (cadr args)) (tests suites 'input 'expected)])))
+     [else (load (cadr args)) (tests suites 'input 'expected 'actual)])))
