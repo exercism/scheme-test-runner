@@ -4,7 +4,7 @@
   (delete-file "results.json")
   (with-output-to-file "results.json"
     (lambda ()
-      (json-write `((version . ,2)
+      (json-write `((version . 2)
                     (status . ,status)
                     (tests . ,tests))))))
 
