@@ -1,4 +1,4 @@
-/* -*- flycheck-gcc-include-path: ("/usr/include/guile/2.2"); flycheck-clang-include-path: ("/usr/include/guile/2.2"); -*- */
+/* -*- flycheck-gcc-include-path: ("/usr/include/guile/3.0"); flycheck-clang-include-path: ("/usr/include/guile/3.0"); -*- */
 /* Shared object module for solving 0/1knapsack with dynamic programming */
 
 #include <stddef.h>
