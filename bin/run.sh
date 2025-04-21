@@ -23,6 +23,6 @@ if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ]; then
 fi
 
 . bin/env.sh
-CODE_DIR="$(pwd)/code"
+CODE_DIR="${PWD}/code"
 export CODE_DIR
 printf '(exercise "%s" "%s" "%s")' "$1" "$2" "$3" | scheme code/exercise.ss >/dev/null
