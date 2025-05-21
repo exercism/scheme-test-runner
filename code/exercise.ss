@@ -118,7 +118,7 @@
 (define (exercise slug input-directory output-directory)
   (parameterize ((cd input-directory))
     (let ((chez-result (process->scheme "scheme --script test.scm --docker"))
-          (guile-result (process->scheme "guile test.scm --docker")))
+          (guile-result (process->scheme "guile -l $CODE_DIR/guile-suppress-warning-messages.scm test.scm --docker")))
       (parameterize ((cd output-directory))
         (call/cc
          (lambda (k)
