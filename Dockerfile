@@ -1,7 +1,10 @@
-FROM ubuntu:26.04@sha256:f3d28607ddd78734bb7f71f117f3c6706c666b8b76cbff7c9ff6e5718d46ff64
+FROM debian:trixie-slim@sha256:109e2c65005bf160609e4ba6acf7783752f8502ad218e298253428690b9eaa4b
 
 RUN apt-get update && \
-    apt-get install -y chezscheme-dev guile-3.0-dev gcc && \
+    apt-get install --no-install-recommends -y \
+        chezscheme-dev \
+        gcc \
+        guile-3.0-dev && \
     apt-get purge --auto-remove && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
@@ -9,6 +12,7 @@ RUN apt-get update && \
 ENV GUILE_AUTO_COMPILE=0
 
 WORKDIR /opt/test-runner
-COPY . .
+COPY bin/run.sh bin/run-tests.sh bin/env.sh bin/
+COPY code code/
 
 ENTRYPOINT ["/opt/test-runner/bin/run.sh"]
