@@ -1,13 +1,11 @@
-FROM debian:trixie-slim@sha256:109e2c65005bf160609e4ba6acf7783752f8502ad218e298253428690b9eaa4b
+FROM alpine:3.24.1@sha256:28bd5fe8b56d1bd048e5babf5b10710ebe0bae67db86916198a6eec434943f8b
 
-RUN apt-get update && \
-    apt-get install --no-install-recommends -y \
-        chezscheme-dev \
+RUN apk add --no-cache \
+        chez-scheme \
         gcc \
-        guile-3.0-dev && \
-    apt-get purge --auto-remove && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+        guile-dev \
+        musl-dev && \
+    ln -s /usr/bin/chez /usr/local/bin/scheme
 
 ENV GUILE_AUTO_COMPILE=0
 
