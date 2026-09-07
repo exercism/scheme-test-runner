@@ -1,8 +1,9 @@
-.git/
-.github/
-tests/
-.appends
-.gitignore
-.gitattributes
-.dockerignore
-Dockerfile
+*
+
+!bin/
+!bin/run.sh
+!bin/run-tests.sh
+!bin/env.sh
+
+!code/
+!code/*
