@@ -28,7 +28,7 @@ RUN apk add --no-cache \
 ENV GUILE_AUTO_COMPILE=0
 
 WORKDIR /opt/test-runner
-COPY bin/run.sh bin/run-tests.sh bin/env.sh bin/
-COPY code code/
+COPY bin/ bin/
+COPY code/ code/
 
 ENTRYPOINT ["/opt/test-runner/bin/run.sh"]
