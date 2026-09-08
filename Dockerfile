@@ -1,14 +1,34 @@
-FROM ubuntu:26.04@sha256:f3d28607ddd78734bb7f71f117f3c6706c666b8b76cbff7c9ff6e5718d46ff64
+FROM alpine:3.24.1@sha256:28bd5fe8b56d1bd048e5babf5b10710ebe0bae67db86916198a6eec434943f8b
 
-RUN apt-get update && \
-    apt-get install -y chezscheme-dev guile-3.0-dev gcc && \
-    apt-get purge --auto-remove && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache \
+        chez-scheme \
+        gcc \
+        guile-dev \
+        musl-dev && \
+    ln -s /usr/bin/chez /usr/local/bin/scheme && \
+    # Remove link-time optimization
+    rm -f \
+        /usr/libexec/gcc/x86_64-alpine-linux-musl/*/lto1 \
+        /usr/libexec/gcc/x86_64-alpine-linux-musl/*/lto-wrapper \
+        /usr/bin/lto-dump && \
+    # Remove split debug info    
+    rm -f /usr/bin/dwp && \
+    # Remove GCC sanitizers
+    rm -f \
+        /usr/lib/libasan.so* \
+        /usr/lib/libtsan.so* \
+        /usr/lib/libubsan.so* && \
+    # Remove large static archives
+    rm -f \
+        /usr/lib/libguile-*.a \
+        /usr/lib/libchezscheme.a \
+        /usr/lib/libgmp.a \
+        /usr/lib/libltdl.a
 
 ENV GUILE_AUTO_COMPILE=0
 
 WORKDIR /opt/test-runner
-COPY . .
+COPY bin/ bin/
+COPY code/ code/
 
 ENTRYPOINT ["/opt/test-runner/bin/run.sh"]

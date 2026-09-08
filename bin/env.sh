@@ -1,4 +1,6 @@
-#!/usr/bin/env bash
-C_INCLUDE_PATH="/usr/lib/csv10.0.0/ta6le:/usr/include/guile/3.0"
-export C_INCLUDE_PATH
+#!/usr/bin/env sh
 
+# Discover Chez's scheme.h dynamically
+CHEZ_INCLUDE_PATH="$(dirname "$(find /usr/lib -name scheme.h -print -quit)")"
+C_INCLUDE_PATH="${CHEZ_INCLUDE_PATH}:/usr/include/guile/3.0"
+export C_INCLUDE_PATH
