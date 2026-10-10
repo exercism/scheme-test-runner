@@ -25,4 +25,4 @@ fi
 . bin/env.sh
 CODE_DIR="${PWD}/code"
 export CODE_DIR
-printf '(exercise "%s" "%s" "%s")' "$1" "$2" "$3" | scheme code/exercise.ss >/dev/null
+guile code/exercise.scm "$1" "$2" "$3" >/dev/null
