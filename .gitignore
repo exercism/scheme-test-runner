@@ -1,3 +1,5 @@
 tests/**/results.json
 tests/**/*.o
 tests/**/*.so
+
+CLAUDE.md
